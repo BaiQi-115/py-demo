@@ -1,0 +1,25 @@
+{
+    "name": "my dev project",
+  
+    // 官方基础镜像（自带常用工具、非 root 用户 vscode）
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  
+    "features": {
+      // Python 3.12 + uv（官方 feature）
+      "ghcr.io/devcontainers/features/python:1": {
+        "version": "3.12",
+        "installTools": true
+      },
+      // Node.js 22 LTS
+      "ghcr.io/devcontainers/features/node:1": {
+        "version": "24"
+      },
+      // Git 最新版（可选，镜像里已有基础 git）
+      "ghcr.io/devcontainers/features/git:1": {
+        "version": "latest"
+      }
+    },
+  
+    // 依赖安装
+    "postCreateCommand": "uv sync --frozen || uv pip install -r requirements.txt || true"
+  }
