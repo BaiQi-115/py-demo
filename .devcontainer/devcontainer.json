@@ -2,6 +2,8 @@
     "name": "my dev project",
     "image": "carter115/coder-ubuntu:py312-node24-v1",
     "remoteUser": "coder",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "postCreateCommand": "uv pip install -r ${containerWorkspaceFolder}/requirements.txt",
     "features": {
     },
     "customizations": {
