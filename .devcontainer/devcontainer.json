@@ -1,5 +1,24 @@
 {
     "name": "my dev project",
     "image": "carter115/coder-ubuntu:py312-node24-v1",
-    "remoteUser": "coder"
+    "remoteUser": "coder",
+    "features": {
+        "ghcr.io/devcontainers/features/desktop-lite:1": {} // 这会安装一个轻量级桌面版 VS Code
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",          // Python 扩展
+                "ms-python.vscode-pylance",  // Python 语言服务器
+                "esbenp.prettier-vscode",    // Prettier 代码格式化
+                "dbaeumer.vscode-eslint"     // ESLint
+                // 在这里添加你需要的其他扩展 ID
+            ],
+            "settings": {
+                "editor.formatOnSave": true, // 一个 VS Code 设置示例
+                "python.defaultInterpreterPath": "/home/coder/.venv/bin/python"
+                // 在这里添加你需要的其他 VS Code 设置
+            }
+        }
+    }
 }
