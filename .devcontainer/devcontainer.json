@@ -3,7 +3,6 @@
     "image": "carter115/coder-ubuntu:py312-node24-v1",
     "remoteUser": "coder",
     "features": {
-        "ghcr.io/devcontainers/features/desktop-lite:1": {} // 这会安装一个轻量级桌面版 VS Code
     },
     "customizations": {
         "vscode": {
