@@ -9,16 +9,16 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "ms-python.python",          // Python 扩展
-                "ms-python.vscode-pylance",  // Python 语言服务器
-                "esbenp.prettier-vscode",    // Prettier 代码格式化
+                "ms-python.python",          // Python extension
+                "ms-python.vscode-pylance",  // Python language server
+                "esbenp.prettier-vscode",    // Prettier code formatter
                 "dbaeumer.vscode-eslint"     // ESLint
-                // 在这里添加你需要的其他扩展 ID
+                // Add other extension IDs you need here
             ],
             "settings": {
-                "editor.formatOnSave": true, // 一个 VS Code 设置示例
+                "editor.formatOnSave": true, // An example VS Code setting
                 "python.defaultInterpreterPath": "/home/coder/.venv/bin/python"
-                // 在这里添加你需要的其他 VS Code 设置
+                // Add other VS Code settings you need here
             }
         }
     }

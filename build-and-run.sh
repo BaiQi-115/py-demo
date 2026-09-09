@@ -1,22 +1,22 @@
 #!/bin/bash
 
-# Tornado Docker 自动构建和运行脚本
-set -e  # 遇到错误立即退出
+# Tornado Docker automated build and run script
+set -e  # Exit immediately on error
 
-# 颜色定义
+# Color definitions
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# 变量配置
+# Variable configuration
 IMAGE_NAME="tornado-app"
 CONTAINER_NAME="tornado-container"
 TAG="latest"
 PORT="8888"
 
-# 打印带颜色的信息
+# Print colored messages
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -33,144 +33,144 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# 显示帮助信息
+# Show help information
 show_help() {
-    echo "用法: $0 [命令]"
+    echo "Usage: $0 [command]"
     echo ""
-    echo "命令:"
-    echo "  build     构建 Docker 镜像"
-    echo "  run       运行 Docker 容器"
-    echo "  stop      停止 Docker 容器"
-    echo "  clean     清理 Docker 镜像和容器"
-    echo "  status    检查容器状态"
-    echo "  test      测试应用是否正常运行"
-    echo "  all       构建并运行（默认）"
+    echo "Commands:"
+    echo "  build     Build the Docker image"
+    echo "  run       Run the Docker container"
+    echo "  stop      Stop the Docker container"
+    echo "  clean     Clean up the Docker image and container"
+    echo "  status    Check the container status"
+    echo "  test      Test whether the application is running properly"
+    echo "  all       Build and run (default)"
     echo ""
-    echo "示例:"
-    echo "  $0 build      # 只构建镜像"
-    echo "  $0 run        # 只运行容器"
-    echo "  $0 all        # 构建并运行"
-    echo "  $0 test       # 测试应用"
+    echo "Examples:"
+    echo "  $0 build      # Build the image only"
+    echo "  $0 run        # Run the container only"
+    echo "  $0 all        # Build and run"
+    echo "  $0 test       # Test the application"
 }
 
-# 检查 Docker 是否安装
+# Check whether Docker is installed
 check_docker() {
     if ! command -v docker &> /dev/null; then
-        log_error "Docker 未安装，请先安装 Docker"
+        log_error "Docker is not installed. Please install Docker first"
         exit 1
     fi
 
     if ! docker info &> /dev/null; then
-        log_error "Docker 守护进程未运行，请启动 Docker"
+        log_error "The Docker daemon is not running. Please start Docker"
         exit 1
     fi
 
-    log_success "Docker 检查通过"
+    log_success "Docker check passed"
 }
 
-# 构建 Docker 镜像
+# Build the Docker image
 build_image_by_pybin() {
-    log_info "基于python项目，开始打包二进制文件"
+    log_info "Based on the Python project, starting to package the binary file"
     cd /app
     pyinstaller --onefile --hidden-import tornado,tornado.ioloop,tornado.web,tornado.escape --name app app.py
     if [[ ! -f "dist/app" ]];then
-        log_error "打包二进制文件失败"
+        log_error "Failed to package the binary file"
     fi
-    log_info "开始构建 Docker 镜像: ${IMAGE_NAME}:${TAG}"
-    # 检查必要文件是否存在
+    log_info "Starting to build the Docker image: ${IMAGE_NAME}:${TAG}"
+    # Check whether the required files exist
     if [[ ! -f "Dockerfile_pybin" ]]; then
-        log_error "Dockerfile_pybin 不存在"
+        log_error "Dockerfile_pybin does not exist"
         exit 1
     fi
-    # 构建镜像
+    # Build the image
     docker build -t ${IMAGE_NAME}:${TAG} -f Dockerfile_pybin .
     
-    # 检查构建是否成功
+    # Check whether the build succeeded
     if docker images | grep -q "${IMAGE_NAME}"; then
-        log_success "Docker 镜像构建成功: ${IMAGE_NAME}:${TAG}"
+        log_success "Docker image built successfully: ${IMAGE_NAME}:${TAG}"
 
-        # 定义保存文件名
+        # Define the save file name
         local SAVE_FILE="${IMAGE_NAME}-${TAG}.tar"
-        log_info "开始打包 Docker 镜像到文件: ${SAVE_FILE}"
+        log_info "Starting to save the Docker image to a file: ${SAVE_FILE}"
         docker save -o "${SAVE_FILE}" "${IMAGE_NAME}:${TAG}"
 
         if [[ -f "${SAVE_FILE}" ]]; then
-            log_success "Docker 镜像已成功打包到 ${SAVE_FILE}"
+            log_success "Docker image has been saved to ${SAVE_FILE}"
         else
-            log_error "Docker 镜像打包失败"
+            log_error "Failed to save the Docker image"
             exit 1
         fi
     else
-        log_error "Docker 镜像构建失败"
+        log_error "Failed to build the Docker image"
         exit 1
     fi
 }    
 
-# 构建 Docker 镜像
+# Build the Docker image
 build_image() {
-    log_info "开始构建 Docker 镜像: ${IMAGE_NAME}:${TAG}"
+    log_info "Starting to build the Docker image: ${IMAGE_NAME}:${TAG}"
 
-    # 检查必要文件是否存在
+    # Check whether the required files exist
     if [[ ! -f "Dockerfile" ]]; then
-        log_error "Dockerfile 不存在"
+        log_error "Dockerfile does not exist"
         exit 1
     fi
 
     if [[ ! -f "requirements.txt" ]]; then
-        log_error "requirements.txt 不存在"
+        log_error "requirements.txt does not exist"
         exit 1
     fi
 
     if [[ ! -f "app.py" ]]; then
-        log_error "app.py 不存在"
+        log_error "app.py does not exist"
         exit 1
     fi
 
-    # 构建镜像
+    # Build the image
     docker build -t ${IMAGE_NAME}:${TAG} .
 
-    # 检查构建是否成功
+    # Check whether the build succeeded
     if docker images | grep -q "${IMAGE_NAME}"; then
-        log_success "Docker 镜像构建成功: ${IMAGE_NAME}:${TAG}"
+        log_success "Docker image built successfully: ${IMAGE_NAME}:${TAG}"
 
-        # 定义保存文件名
+        # Define the save file name
         local SAVE_FILE="${IMAGE_NAME}-${TAG}.tar"
-        log_info "开始打包 Docker 镜像到文件: ${SAVE_FILE}"
+        log_info "Starting to save the Docker image to a file: ${SAVE_FILE}"
         docker save -o "${SAVE_FILE}" "${IMAGE_NAME}:${TAG}"
 
         if [[ -f "${SAVE_FILE}" ]]; then
-            log_success "Docker 镜像已成功打包到 ${SAVE_FILE}"
+            log_success "Docker image has been saved to ${SAVE_FILE}"
         else
-            log_error "Docker 镜像打包失败"
+            log_error "Failed to save the Docker image"
             exit 1
         fi
     else
-        log_error "Docker 镜像构建失败"
+        log_error "Failed to build the Docker image"
         exit 1
     fi
 }
 
-# 运行 Docker 容器
+# Run the Docker container
 run_container() {
-    log_info "检查镜像是否存在..."
+    log_info "Checking whether the image exists..."
     if ! docker images | grep -q "${IMAGE_NAME}"; then
-        log_warning "镜像不存在，开始构建..."
+        log_warning "The image does not exist. Starting to build..."
         build_image_by_pybin
     fi
 
-    # 检查容器是否已经在运行
+    # Check whether the container is already running
     if docker ps | grep -q "${CONTAINER_NAME}"; then
-        log_warning "容器 ${CONTAINER_NAME} 已经在运行，先停止它"
+        log_warning "Container ${CONTAINER_NAME} is already running. Stopping it first"
         stop_container
     fi
 
-    # 检查容器是否存在但已停止
+    # Check whether the container exists but is stopped
     if docker ps -a | grep -q "${CONTAINER_NAME}"; then
-        log_info "删除已停止的容器 ${CONTAINER_NAME}"
+        log_info "Removing the stopped container ${CONTAINER_NAME}"
         docker rm ${CONTAINER_NAME}
     fi
 
-    log_info "启动 Docker 容器: ${CONTAINER_NAME}"
+    log_info "Starting the Docker container: ${CONTAINER_NAME}"
     docker run -d \
         --name ${CONTAINER_NAME} \
         -p ${PORT}:8888 \
@@ -178,112 +178,112 @@ run_container() {
         -e HOSTNAME=$(hostname) \
         ${IMAGE_NAME}:${TAG}
 
-    # 等待容器启动
-    log_info "等待容器启动..."
+    # Wait for the container to start
+    log_info "Waiting for the container to start..."
     sleep 5
 
-    # 检查容器状态
+    # Check the container status
     if docker ps | grep -q "${CONTAINER_NAME}"; then
-        log_success "容器启动成功"
-        log_info "应用运行在: http://localhost:${PORT}"
-        log_info "健康检查: http://localhost:${PORT}/health"
+        log_success "Container started successfully"
+        log_info "The application is running at: http://localhost:${PORT}"
+        log_info "Health check: http://localhost:${PORT}/health"
     else
-        log_error "容器启动失败"
+        log_error "Failed to start the container"
         docker logs ${CONTAINER_NAME}
         exit 1
     fi
 }
 
-# 停止容器
+# Stop the container
 stop_container() {
-    log_info "停止容器: ${CONTAINER_NAME}"
+    log_info "Stopping the container: ${CONTAINER_NAME}"
     if docker ps | grep -q "${CONTAINER_NAME}"; then
         docker stop ${CONTAINER_NAME}
-        log_success "容器已停止"
+        log_success "Container stopped"
     else
-        log_warning "容器未在运行"
+        log_warning "The container is not running"
     fi
 }
 
-# 清理资源
+# Clean up resources
 clean_resources() {
-    log_info "开始清理资源..."
+    log_info "Starting to clean up resources..."
 
-    # 停止并删除容器
+    # Stop and remove the container
     if docker ps -a | grep -q "${CONTAINER_NAME}"; then
-        log_info "删除容器: ${CONTAINER_NAME}"
+        log_info "Removing the container: ${CONTAINER_NAME}"
         docker rm -f ${CONTAINER_NAME} 2>/dev/null || true
     fi
 
-    # 删除镜像
+    # Remove the image
     if docker images | grep -q "${IMAGE_NAME}"; then
-        log_info "删除镜像: ${IMAGE_NAME}:${TAG}"
+        log_info "Removing the image: ${IMAGE_NAME}:${TAG}"
         docker rmi ${IMAGE_NAME}:${TAG} 2>/dev/null || true
     fi
 
-    log_success "资源清理完成"
+    log_success "Resource cleanup completed"
 }
 
-# 检查容器状态
+# Check the container status
 check_status() {
-    log_info "检查容器状态..."
+    log_info "Checking the container status..."
 
     if docker ps | grep -q "${CONTAINER_NAME}"; then
-        log_success "容器正在运行"
-        echo "容器信息:"
+        log_success "The container is running"
+        echo "Container information:"
         docker ps | grep "${CONTAINER_NAME}"
         echo ""
-        echo "最近日志:"
+        echo "Recent logs:"
         docker logs --tail 10 ${CONTAINER_NAME}
     else
         if docker ps -a | grep -q "${CONTAINER_NAME}"; then
-            log_warning "容器已停止"
+            log_warning "The container is stopped"
             docker ps -a | grep "${CONTAINER_NAME}"
         else
-            log_warning "容器不存在"
+            log_warning "The container does not exist"
         fi
     fi
 }
 
-# 测试应用
+# Test the application
 test_app() {
-    log_info "测试应用..."
+    log_info "Testing the application..."
 
     if ! docker ps | grep -q "${CONTAINER_NAME}"; then
-        log_error "容器未运行，请先启动容器"
+        log_error "The container is not running. Please start the container first"
         exit 1
     fi
 
     local base_url="http://localhost:${PORT}"
 
-    log_info "测试健康检查端点..."
+    log_info "Testing the health check endpoint..."
     if curl -s -f "${base_url}/health" > /dev/null; then
-        log_success "健康检查通过"
+        log_success "Health check passed"
     else
-        log_error "健康检查失败"
+        log_error "Health check failed"
         exit 1
     fi
 
-    log_info "测试首页端点..."
+    log_info "Testing the home page endpoint..."
     if curl -s -f "${base_url}/" > /dev/null; then
-        log_success "首页访问正常"
+        log_success "Home page is accessible"
     else
-        log_error "首页访问失败"
+        log_error "Failed to access the home page"
         exit 1
     fi
 
-    log_info "测试信息端点..."
+    log_info "Testing the info endpoint..."
     if curl -s -f "${base_url}/info" > /dev/null; then
-        log_success "信息端点正常"
+        log_success "The info endpoint is working"
     else
-        log_error "信息端点访问失败"
+        log_error "Failed to access the info endpoint"
         exit 1
     fi
 
-    log_success "所有测试通过！应用运行正常"
+    log_success "All tests passed! The application is running properly"
 }
 
-# 主函数
+# Main function
 main() {
     local command=${1:-"all"}
 
@@ -323,12 +323,12 @@ main() {
             show_help
             ;;
         *)
-            log_error "未知命令: $command"
+            log_error "Unknown command: $command"
             show_help
             exit 1
             ;;
     esac
 }
 
-# 执行主函数
+# Execute the main function
 main "$@"

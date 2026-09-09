@@ -1,38 +1,38 @@
-# 使用官方 Python 运行时作为父镜像
+# Use the official Python runtime as the base image
 FROM python:3.9-slim
 
-# 设置工作目录
+# Set the working directory
 WORKDIR /app
 
-# 设置环境变量
+# Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PORT=8888
 ENV HOST=0.0.0.0
 ENV ENVIRONMENT=production
 
-# 安装系统依赖
+# Install system dependencies
 #RUN apt-get update && apt-get install -y \
 #    curl \
 #    && rm -rf /var/lib/apt/lists/*
 
-# 复制 requirements.txt 并安装 Python 依赖
+# Copy requirements.txt and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 复制应用代码
+# Copy the application code
 COPY app.py .
 
-# 创建非 root 用户运行应用（安全最佳实践）
+# Create a non-root user to run the application (security best practice)
 RUN useradd -m -r appuser && chown -R appuser /app
 USER appuser
 
-# 暴露端口
+# Expose the port
 EXPOSE 8888
 
-# 健康检查
+# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8888/health || exit 1
 
-# 运行应用
+# Run the application
 CMD ["python", "app.py"]

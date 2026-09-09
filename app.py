@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tornado Web Server 示例
+Tornado Web Server Example
 """
 
 import tornado.ioloop
@@ -11,30 +11,30 @@ import json
 from datetime import datetime
 import logging
 
-# 配置日志
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class MainHandler(tornado.web.RequestHandler):
-    """主页面处理器"""
+    """Main page handler"""
 
     def get(self):
-        """处理 GET 请求"""
+        """Handle GET requests"""
         response = {
-            "message": "欢迎使用 Tornado Web 服务器!",
+            "message": "Welcome to the Tornado Web Server!",
             "timestamp": datetime.now().isoformat(),
             "status": "success",
             "endpoints": {
-                "/": "首页",
-                "/health": "健康检查",
-                "/info": "服务器信息",
-                "/echo": "回显消息 (POST)"
+                "/": "Home page",
+                "/health": "Health check",
+                "/info": "Server information",
+                "/echo": "Echo message (POST)"
             }
         }
         self.write(response)
 
 class HealthHandler(tornado.web.RequestHandler):
-    """健康检查处理器"""
+    """Health check handler"""
 
     def get(self):
         health_status = {
@@ -46,7 +46,7 @@ class HealthHandler(tornado.web.RequestHandler):
         self.write(health_status)
 
 class InfoHandler(tornado.web.RequestHandler):
-    """服务器信息处理器"""
+    """Server information handler"""
 
     def get(self):
         info = {
@@ -60,7 +60,7 @@ class InfoHandler(tornado.web.RequestHandler):
         self.write(info)
 
 class EchoHandler(tornado.web.RequestHandler):
-    """回显处理器 - 测试 POST 请求"""
+    """Echo handler - for testing POST requests"""
 
     def post(self):
         try:
@@ -74,13 +74,13 @@ class EchoHandler(tornado.web.RequestHandler):
             self.write(echo_response)
         except json.JSONDecodeError:
             self.set_status(400)
-            self.write({"error": "无效的 JSON 数据"})
+            self.write({"error": "Invalid JSON data"})
 
     def get(self):
-        self.write({"message": "请使用 POST 方法发送 JSON 数据到此端点"})
+        self.write({"message": "Please send JSON data to this endpoint using the POST method"})
 
 def make_app():
-    """创建 Tornado 应用"""
+    """Create the Tornado application"""
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/health", HealthHandler),
@@ -89,25 +89,25 @@ def make_app():
     ])
 
 if __name__ == "__main__":
-    # 获取端口，默认为 8888
+    # Get the port, default is 8888
     port = int(os.environ.get("PORT", 8888))
     host = os.environ.get("HOST", "0.0.0.0")
 
-    # 创建应用
+    # Create the application
     app = make_app()
 
-    # 启动服务器
+    # Start the server
     app.listen(port, address=host)
 
-    logger.info(f"🚀 Tornado 服务器启动在 {host}:{port}")
-    logger.info("📝 可用端点:")
-    logger.info("   GET  /        - 首页")
-    logger.info("   GET  /health  - 健康检查")
-    logger.info("   GET  /info    - 服务器信息")
-    logger.info("   POST /echo    - 回显消息")
-    logger.info("⏹️  按 Ctrl+C 停止服务器")
+    logger.info(f"🚀 Tornado server started on {host}:{port}")
+    logger.info("📝 Available endpoints:")
+    logger.info("   GET  /        - Home page")
+    logger.info("   GET  /health  - Health check")
+    logger.info("   GET  /info    - Server information")
+    logger.info("   POST /echo    - Echo message")
+    logger.info("⏹️  Press Ctrl+C to stop the server")
 
     try:
         tornado.ioloop.IOLoop.current().start()
     except KeyboardInterrupt:
-        logger.info("👋 服务器正在关闭...")
+        logger.info("👋 Server is shutting down...")

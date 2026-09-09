@@ -1,20 +1,20 @@
-# 使用最新的 Alpine Linux 作为基础镜像
+# Use the latest Alpine Linux as the base image
 #FROM alpine:latest
 FROM ubuntu:jammy
 
-# 设置工作目录
+# Set the working directory
 WORKDIR /app
 
-# 将编译好的二进制文件 复制到容器的 /app 目录
+# Copy the compiled binary file to the /app directory in the container
 COPY dist/app /app/app
 
-# 赋予二进制文件执行权限
+# Grant execute permission to the binary file
 RUN chmod +x /app/app
 
-# 暴露应用程序监听的端口
-# 根据您的 app.py，Tornado 服务器默认监听 8888 端口
+# Expose the port the application listens on
+# According to your app.py, the Tornado server listens on port 8888 by default
 EXPOSE 8888
 
-# 定义容器启动时执行的命令
-# 运行您的二进制文件
+# Define the command to execute when the container starts
+# Run your binary file
 ENTRYPOINT ["/app/app"]
