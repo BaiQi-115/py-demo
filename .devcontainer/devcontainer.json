@@ -3,7 +3,14 @@
     "image": "carter115/coder-ubuntu:py312-node24-v1",
     "remoteUser": "coder",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "userEnvProbe": "none",
+    "postStartCommand": "pkill -9 -f vscode-server || true",
+    "onCreateCommand": "bash .devcontainer/preinstall-server.sh",
+    "containerEnv": {
+        "PATH": "/home/coder/.local/bin:/home/coder/.venv/bin:${containerEnv:PATH}"
+    },
     "postCreateCommand": "uv pip install -r ${containerWorkspaceFolder}/requirements.txt",
+    
     "features": {
     },
     "customizations": {
