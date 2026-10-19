@@ -5,11 +5,12 @@
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "userEnvProbe": "none",
     "postStartCommand": "pkill -9 -f vscode-server || true",
-    "onCreateCommand": "bash .devcontainer/preinstall-server.sh",
-    "containerEnv": {
+    
+    "remoteEnv": {
         "PATH": "/home/coder/.local/bin:/home/coder/.venv/bin:${containerEnv:PATH}"
     },
-    "postCreateCommand": "uv pip install -r ${containerWorkspaceFolder}/requirements.txt",
+    "postCreateCommand": "PATH=/home/coder/.local/bin:/home/coder/.venv/bin:$PATH uv pip install -r ${containerWorkspaceFolder}/requirements.txt",
+    "onCreateCommand": "bash .devcontainer/preinstall-server.sh",
     
     "features": {
     },
