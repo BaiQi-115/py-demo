@@ -3,17 +3,7 @@
     "image": "carter115/coder-ubuntu:py312-node24-v1",
     "remoteUser": "coder",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-    "userEnvProbe": "none",
-    "postStartCommand": "pkill -9 -f vscode-server || true",
-    "containerEnv": {
-        "VSCODE_COMMIT_ID": "6d62b1d5dace93a33b3a6d3eca1317bd5e15bcb1"
-    },
-    "remoteEnv": {
-        "PATH": "/home/coder/.local/bin:/home/coder/.venv/bin:${containerEnv:PATH}"
-    },
-    "postCreateCommand": "PATH=/home/coder/.local/bin:/home/coder/.venv/bin:$PATH uv pip install -r ${containerWorkspaceFolder}/requirements.txt",
-    "onCreateCommand": "bash .devcontainer/preinstall-server.sh",
-    
+    "postCreateCommand": "uv pip install -r ${containerWorkspaceFolder}/requirements.txt",
     "features": {
     },
     "customizations": {
